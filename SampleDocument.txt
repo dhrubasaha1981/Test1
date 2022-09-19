@@ -1,0 +1,138 @@
+Domain Class:
+
+
+ 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+ 
+@Entity
+@Getter
+@Setter
+public class Food{
+
+    private Integer serving
+    private String dishType;
+    private String ingredients;
+ 
+    public Food() {
+    }
+ 
+    public Food(Integer serving, String dishType, String ingredients) {
+        this.serving = serving;
+        this.dishType = dishType;
+        this.ingredients = ingredients;
+    }
+ 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+
+    
+}
+
+//Repository Class
+import org.springframework.data.jpa.repository.JpaRepository;
+ 
+public interface FoodRepository extends JpaRepository<Food, Integer> {
+ 
+}
+
+//service class
+import java.util.List;
+ 
+import javax.transaction.Transactional;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+ 
+@Service
+@Transactional
+public class FoodService {
+ 
+    @Autowired
+    private FoodRepository repo;
+     
+    public List<Food> listAll() {
+        return repo.findAll();
+    }
+     
+    public void save(Food food) {
+        repo.save(food);
+    }
+     
+    public Food get(Integer id) {
+        return repo.findById(id).get();
+    }
+     
+    public void delete(Integer id) {
+        repo.deleteById(id);
+    }
+}
+
+//Food Controller
+import java.util.*;
+ 
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
+ 
+import org.springframework.web.bind.annotation.*;
+ 
+@RestController
+public class FoodController {
+ 
+    @Autowired
+    private ProductService service;
+private boolean vegDish=true;
+private boolean ingrediantReq=true;
+private int serCount=0;
+     
+    // RESTful API methods for Retrieval operations
+@GetMapping("/foods")
+public List<Product> listReceipes() {
+    return service.listAll();
+}
+
+@GetMapping("/foods/{id}")
+public ResponseEntity<Food> get(@PathVariable Integer id) {
+    try {
+        Food food = service.get(id);
+        return new ResponseEntity<Food>(food, HttpStatus.OK);
+    } catch (NoSuchElementException e) {
+        return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+    }      
+}
+     
+    // RESTful API method for Create operation
+@PostMapping("/foods")
+public void add(@RequestBody Food food) {
+    service.save(food);
+}
+     
+    // RESTful API method for Update operation
+@PutMapping("/products/{id}")
+public ResponseEntity<?> update(@RequestBody Product product, @PathVariable Integer id) {
+    try {
+        Product existProduct = service.get(id);
+        service.save(product);
+        return new ResponseEntity<>(HttpStatus.OK);
+    } catch (NoSuchElementException e) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }      
+}
+     
+    // RESTful API method for Delete operation
+@DeleteMapping("/foods/{id}")
+public void delete(@PathVariable Integer id) {
+    service.delete(id);
+}
+
+ public boolean is VegDish(){
+return vegDish;
+ public boolean is ingerdientAdd(){
+return ingrediantReq;
+ public boolean is VegDish(){
+servCount++
+return serCount;
+}
